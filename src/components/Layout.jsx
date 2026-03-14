@@ -20,48 +20,41 @@ export default function Layout({ children }) {
 
   const sidebarSections = sidebars[activePrefix] || sidebars['/docs']
 
-  // Track which section is in view via IntersectionObserver
+  // Track which section heading is closest to top of viewport
   useEffect(() => {
     setActiveHash('')
-    // Collect all hash IDs from current sidebar
+
     const currentSidebar = sidebars[activePrefix] || []
     const ids = currentSidebar
       .flatMap((s) => s.links)
       .filter((l) => l.hash)
       .map((l) => l.hash.replace('#', ''))
 
-    // Track visible sections, pick the first one
-    const visibleSet = new Set()
+    if (!ids.length) return
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          visibleSet.add(entry.target.id)
-        } else {
-          visibleSet.delete(entry.target.id)
-        }
-      })
-      // Pick the first visible section in document order
-      const first = ids.find((id) => visibleSet.has(id))
-      setActiveHash(first ? '#' + first : '')
-    }, {
-      rootMargin: '-80px 0px -60% 0px',
-      threshold: 0,
-    })
+    const handleScroll = () => {
+      const scrollY = window.scrollY + 100 // offset for fixed header
+      let current = ''
 
-    // Delay to let DOM render
-    const timer = setTimeout(() => {
-      ids.forEach((id) => {
+      for (const id of ids) {
         const el = document.getElementById(id)
-        if (el) observer.observe(el)
-      })
-    }, 100)
+        if (el && el.offsetTop <= scrollY) {
+          current = '#' + id
+        }
+      }
+
+      setActiveHash(current)
+    }
+
+    // Initial check after DOM renders
+    const timer = setTimeout(handleScroll, 150)
+    window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
       clearTimeout(timer)
-      observer.disconnect()
+      window.removeEventListener('scroll', handleScroll)
     }
-  }, [location.pathname])
+  }, [location.pathname, activePrefix])
   const { theme, toggle } = useTheme()
 
   useEffect(() => setMobileOpen(false), [location.pathname])
