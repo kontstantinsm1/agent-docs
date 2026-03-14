@@ -23,6 +23,12 @@ export const sidebars = {
         { label: 'Errors', path: '/docs/errors' },
       ],
     },
+    {
+      title: 'SDK',
+      links: [
+        { label: 'Client SDK', path: '/docs/sdk' },
+      ],
+    },
   ],
   '/api': [
     {
