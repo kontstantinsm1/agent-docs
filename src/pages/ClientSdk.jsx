@@ -265,6 +265,7 @@ interface AgentConfig {
       <PageNav
         prev={{ label: 'Errors', path: '/docs/errors' }}
         next={{ label: 'API Reference', path: '/api' }}
+
       />
     </>
   )

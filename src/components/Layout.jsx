@@ -12,10 +12,23 @@ export default function Layout({ children }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [activeHash, setActiveHash] = useState('')
 
+  const activePrefix = topTabs.find((t) =>
+    t.prefix === '/docs'
+      ? location.pathname === '/docs' || location.pathname.startsWith('/docs/')
+      : location.pathname.startsWith(t.prefix)
+  )?.prefix || '/docs'
+
+  const sidebarSections = sidebars[activePrefix] || sidebars['/docs']
+
   // Track which section is in view via IntersectionObserver
   useEffect(() => {
     setActiveHash('')
-    const ids = ['quick-start', 'configuration', 'registries', 'troubleshooting']
+    // Collect all hash IDs from current sidebar
+    const currentSidebar = sidebars[activePrefix] || []
+    const ids = currentSidebar
+      .flatMap((s) => s.links)
+      .filter((l) => l.hash)
+      .map((l) => l.hash.replace('#', ''))
 
     // Track visible sections, pick the first one
     const visibleSet = new Set()
@@ -64,14 +77,6 @@ export default function Layout({ children }) {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
-
-  const activePrefix = topTabs.find((t) =>
-    t.prefix === '/docs'
-      ? location.pathname === '/docs' || location.pathname.startsWith('/docs/')
-      : location.pathname.startsWith(t.prefix)
-  )?.prefix || '/docs'
-
-  const sidebarSections = sidebars[activePrefix] || sidebars['/docs']
 
   return (
     <div className="min-h-screen">

@@ -1,6 +1,7 @@
 export const topTabs = [
   { label: 'Documentation', path: '/docs', prefix: '/docs' },
   { label: 'API Reference', path: '/api', prefix: '/api' },
+  { label: 'Client SDK', path: '/sdk', prefix: '/sdk' },
   { label: 'Integrations', path: '/tools/mcp-server', prefix: '/tools' },
 ]
 
@@ -21,12 +22,6 @@ export const sidebars = {
         { label: 'Webhooks', path: '/docs/webhooks' },
         { label: 'Voice Providers', path: '/docs/providers' },
         { label: 'Errors', path: '/docs/errors' },
-      ],
-    },
-    {
-      title: 'SDK',
-      links: [
-        { label: 'Client SDK', path: '/docs/sdk' },
       ],
     },
   ],
@@ -74,10 +69,32 @@ export const sidebars = {
         { label: 'Event Payload', path: '/api/webhooks/events' },
       ],
     },
+  ],
+  '/sdk': [
     {
-      title: 'Client SDK',
+      title: 'Getting Started',
       links: [
-        { label: 'TypeScript SDK', path: '/docs/sdk' },
+        { label: 'Overview', path: '/sdk' },
+        { label: 'Installation', path: '/sdk', hash: '#installation' },
+        { label: 'Quick Start', path: '/sdk', hash: '#quick-start' },
+        { label: 'Configuration', path: '/sdk', hash: '#config' },
+      ],
+    },
+    {
+      title: 'API',
+      links: [
+        { label: 'Calls', path: '/sdk', hash: '#calls' },
+        { label: 'Agents', path: '/sdk', hash: '#agents' },
+        { label: 'Numbers', path: '/sdk', hash: '#numbers' },
+        { label: 'Webhooks', path: '/sdk', hash: '#webhooks' },
+      ],
+    },
+    {
+      title: 'Advanced',
+      links: [
+        { label: 'Webhook Verification', path: '/sdk', hash: '#webhook-verification' },
+        { label: 'Error Handling', path: '/sdk', hash: '#error-handling' },
+        { label: 'Types', path: '/sdk', hash: '#types' },
       ],
     },
   ],

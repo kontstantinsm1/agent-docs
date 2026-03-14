@@ -201,7 +201,7 @@ HTTP 422
 
       <PageNav
         prev={{ label: 'Voice Providers', path: '/docs/providers' }}
-        next={{ label: 'Client SDK', path: '/docs/sdk' }}
+        next={{ label: 'Client SDK', path: '/sdk' }}
       />
     </>
   )

@@ -28,7 +28,9 @@ export default function App() {
           <Route path="/docs/webhooks" element={<Webhooks />} />
           <Route path="/docs/providers" element={<Providers />} />
           <Route path="/docs/errors" element={<Errors />} />
-          <Route path="/docs/sdk" element={<ClientSdk />} />
+
+          {/* SDK */}
+          <Route path="/sdk" element={<ClientSdk />} />
 
           {/* API Reference */}
           <Route path="/api" element={<ApiReference />} />
