@@ -258,6 +258,9 @@ interface AgentConfig {
   phone: string;
   duration?: number;
   agent_id?: string;
+  outcome?: string;
+  collected_data?: Record<string, string>;
+  functions_called?: string[];
   transcript?: TranscriptEntry[];
   fields?: Record<string, string>;
 }`}</CodeBlock>

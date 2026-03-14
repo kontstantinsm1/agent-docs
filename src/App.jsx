@@ -6,7 +6,7 @@ import { Agents, Telephony, Webhooks, Providers } from './pages/Concepts'
 import Errors from './pages/Errors'
 import ClientSdk from './pages/ClientSdk'
 import ApiReference, {
-  CallCreate, CallGet, CallList, CallTranscript, CallHangup,
+  CallCreate, CallGet, CallList, CallTranscript, CallResult, CallHangup,
   AgentCreate, AgentList, AgentGet, AgentUpdate, AgentDelete, AgentSchema,
   TelephonyNumbers, TelephonyProviders,
   WebhookCreate, WebhookList, WebhookDelete, WebhookEvents,
@@ -38,6 +38,7 @@ export default function App() {
           <Route path="/api/calls/get" element={<CallGet />} />
           <Route path="/api/calls/list" element={<CallList />} />
           <Route path="/api/calls/transcript" element={<CallTranscript />} />
+          <Route path="/api/calls/result" element={<CallResult />} />
           <Route path="/api/calls/hangup" element={<CallHangup />} />
           <Route path="/api/agents/create" element={<AgentCreate />} />
           <Route path="/api/agents/list" element={<AgentList />} />

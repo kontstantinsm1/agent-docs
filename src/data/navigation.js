@@ -39,6 +39,7 @@ export const sidebars = {
         { label: 'Get Call', path: '/api/calls/get', method: 'GET' },
         { label: 'List Calls', path: '/api/calls/list', method: 'GET' },
         { label: 'Get Transcript', path: '/api/calls/transcript', method: 'GET' },
+        { label: 'Get Result', path: '/api/calls/result', method: 'GET' },
         { label: 'Hangup Call', path: '/api/calls/hangup', method: 'POST' },
       ],
     },

@@ -54,6 +54,41 @@ export function Agents() {
         <li><code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>claude-sonnet-4-20250514</code> — Anthropic's Claude</li>
       </ul>
 
+      <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Conversation Flows</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        Agents can use <strong style={{ color: 'var(--c-text)' }}>flow-based conversations</strong> with function calls that guide the dialogue and collect structured data. The LLM automatically fills fields from the conversation context.
+      </p>
+
+      <CodeBlock title="Flow functions with data collection">{`{
+  "flow": {
+    "demo_scheduled": {
+      "parameters": {
+        "client_name": "string",
+        "email": "string",
+        "preferred_time": "string",
+        "interest_area": "string"
+      }
+    },
+    "contact_collected": {
+      "parameters": {
+        "client_name": "string",
+        "email": "string",
+        "interest_area": "string"
+      }
+    },
+    "time_agreed": {
+      "parameters": {
+        "client_name": "string",
+        "callback_time": "string"
+      }
+    }
+  }
+}`}</CodeBlock>
+
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        During the call, each function call is tracked. The <strong style={{ color: 'var(--c-text)' }}>last function called</strong> becomes the call's <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>outcome</code>, and all collected parameters are available as <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>collected_data</code> in the API and webhook payloads.
+      </p>
+
       <PageNav prev={{ label: 'Quick Start', path: '/docs/quickstart' }} next={{ label: 'Calls & Telephony', path: '/docs/telephony' }} />
     </>
   )
@@ -130,15 +165,42 @@ export function Webhooks() {
       </ul>
 
       <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Payload Format</h2>
-      <CodeBlock>{`{
+      <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+        The <code className="text-xs px-1.5 py-0.5 rounded text-emerald-400" style={{ background: 'var(--c-code-bg)' }}>call.completed</code> webhook includes the call outcome, collected data from flow functions, and the full conversation transcript.
+      </p>
+      <CodeBlock title="call.completed payload">{`{
   "event": "call.completed",
   "call_id": "550e8400-e29b-41d4-a716-446655440000",
   "status": "completed",
   "phone": "+380501234567",
   "duration": 45,
   "agent_id": "agent-uuid",
-  "metadata": { "campaign": "spring-2026" }
+  "outcome": "demo_scheduled",
+  "collected_data": {
+    "client_name": "Ivan Petrenko",
+    "email": "ivan@example.com",
+    "preferred_time": "tomorrow at 14:00",
+    "interest_area": "voice agents"
+  },
+  "functions_called": [
+    "customer_available",
+    "interested_voice_agents",
+    "wants_demo",
+    "demo_scheduled"
+  ],
+  "transcript": [
+    { "role": "bot", "text": "Hello! How can I help you?" },
+    { "role": "user", "text": "I'd like to schedule a demo..." }
+  ]
 }`}</CodeBlock>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">Payload Fields</h3>
+      <ul className="text-sm space-y-2 mb-6" style={{ color: 'var(--c-text2)' }}>
+        <li><code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>outcome</code> — The last flow function called (e.g. <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>demo_scheduled</code>, <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>contact_collected</code>). Represents the result of the conversation.</li>
+        <li><code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>collected_data</code> — Structured data extracted by the LLM during the call (name, email, time, etc.)</li>
+        <li><code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>functions_called</code> — Ordered list of all flow functions triggered during the conversation</li>
+        <li><code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>transcript</code> — Full conversation transcript with roles and text</li>
+      </ul>
 
       <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Setting Up</h2>
       <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>You can register webhooks in two ways:</p>

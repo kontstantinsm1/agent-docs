@@ -82,6 +82,11 @@ export function CallGet() {
   "phone": "+380501234567",
   "agent_id": "agent-uuid",
   "duration": 45,
+  "outcome": "demo_scheduled",
+  "collected_data": {
+    "client_name": "Ivan Petrenko",
+    "email": "ivan@example.com"
+  },
   "error": null,
   "started_at": "2026-03-14T15:30:00Z",
   "finished_at": "2026-03-14T15:30:45Z"
@@ -121,7 +126,35 @@ export function CallTranscript() {
   ]
 }`}</CodeBlock>
       </Endpoint>
-      <PageNav prev={{ label: 'List Calls', path: '/api/calls/list' }} next={{ label: 'Hangup Call', path: '/api/calls/hangup' }} />
+      <PageNav prev={{ label: 'List Calls', path: '/api/calls/list' }} next={{ label: 'Get Result', path: '/api/calls/result' }} />
+    </>
+  )
+}
+
+export function CallResult() {
+  return (
+    <>
+      <h1 className="text-3xl font-bold tracking-tight mb-2">Get Call Result</h1>
+      <Endpoint method="GET" path="/api/v1/calls/{call_id}/result" description="Get the collected data and outcome for a completed call. Returns only the structured result, not the full call object.">
+        <ResponseLabel />
+        <CodeBlock>{`{
+  "call_id": "uuid",
+  "outcome": "demo_scheduled",
+  "collected_data": {
+    "client_name": "Ivan Petrenko",
+    "email": "ivan@example.com",
+    "preferred_time": "tomorrow at 14:00",
+    "interest_area": "voice agents"
+  },
+  "functions_called": [
+    "customer_available",
+    "interested_voice_agents",
+    "wants_demo",
+    "demo_scheduled"
+  ]
+}`}</CodeBlock>
+      </Endpoint>
+      <PageNav prev={{ label: 'Get Transcript', path: '/api/calls/transcript' }} next={{ label: 'Hangup Call', path: '/api/calls/hangup' }} />
     </>
   )
 }
@@ -131,7 +164,7 @@ export function CallHangup() {
     <>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Hangup Call</h1>
       <Endpoint method="POST" path="/api/v1/calls/{call_id}/hangup" description="Hang up an active call." />
-      <PageNav prev={{ label: 'Get Transcript', path: '/api/calls/transcript' }} next={{ label: 'Create Agent', path: '/api/agents/create' }} />
+      <PageNav prev={{ label: 'Get Result', path: '/api/calls/result' }} next={{ label: 'Create Agent', path: '/api/agents/create' }} />
     </>
   )
 }
