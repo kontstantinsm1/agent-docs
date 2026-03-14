@@ -132,12 +132,24 @@ export default function Layout({ children }) {
   )
 }
 
-function SidebarLink({ label, path, method }) {
+function SidebarLink({ label, path, method, hash }) {
   const methodColors = {
     GET: 'bg-emerald-500/10 text-emerald-400',
     POST: 'bg-blue-500/10 text-blue-400',
     PUT: 'bg-yellow-500/10 text-yellow-400',
     DELETE: 'bg-red-500/10 text-red-400',
+  }
+
+  // Hash links scroll to section, no active highlight
+  if (hash) {
+    return (
+      <a
+        href={hash}
+        className="flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors no-underline"
+      >
+        {label}
+      </a>
+    )
   }
 
   return (

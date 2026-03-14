@@ -1,7 +1,7 @@
 export const topTabs = [
   { label: 'Documentation', path: '/docs', prefix: '/docs' },
   { label: 'API Reference', path: '/api', prefix: '/api' },
-  { label: 'Tools', path: '/tools/mcp-server', prefix: '/tools' },
+  { label: 'Integrations', path: '/tools/mcp-server', prefix: '/tools' },
 ]
 
 export const sidebars = {
@@ -73,10 +73,10 @@ export const sidebars = {
       title: 'MCP Server',
       links: [
         { label: 'Overview', path: '/tools/mcp-server' },
-        { label: 'Quick Start', path: '/tools/mcp-server#quick-start' },
-        { label: 'Configuration', path: '/tools/mcp-server#configuration' },
-        { label: 'Registries', path: '/tools/mcp-server#registries' },
-        { label: 'Troubleshooting', path: '/tools/mcp-server#troubleshooting' },
+        { label: 'Quick Start', path: '/tools/mcp-server', hash: '#quick-start' },
+        { label: 'Configuration', path: '/tools/mcp-server', hash: '#configuration' },
+        { label: 'Registries', path: '/tools/mcp-server', hash: '#registries' },
+        { label: 'Troubleshooting', path: '/tools/mcp-server', hash: '#troubleshooting' },
       ],
     },
   ],
