@@ -96,6 +96,8 @@ export const sidebars = {
         { label: 'Webhook Verification', path: '/sdk', hash: '#webhook-verification' },
         { label: 'Error Handling', path: '/sdk', hash: '#error-handling' },
         { label: 'Types', path: '/sdk', hash: '#types' },
+        { label: 'Call Log', path: '/sdk', hash: '#call-log' },
+        { label: 'Caller ID', path: '/sdk', hash: '#caller-id' },
       ],
     },
   ],

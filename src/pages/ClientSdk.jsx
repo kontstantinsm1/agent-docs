@@ -265,10 +265,134 @@ interface AgentConfig {
   fields?: Record<string, string>;
 }`}</CodeBlock>
 
+      {/* Call Log */}
+      <h2 id="call-log" className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Call Log</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        Each call generates a detailed log with parameters, result, and timestamped events. Use <code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>agent.calls.get(callId)</code> to retrieve the full call details.
+      </p>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">Call Parameters</h3>
+      <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+        Every call includes detailed telephony parameters showing how it was routed:
+      </p>
+      <CodeBlock title="Call parameters">{`{
+  "provider": "zadarma",
+  "trunk_id": "ST_3qMjKs8UAZ3Q",
+  "trunk_name": "Zadarma (UA)",
+  "trunk_country": "UA",
+  "dial_mode": "sip",
+  "attempt": 2,
+  "max_attempts": 3,
+  "caller_id": "+380443002742",
+  "contact_name": null,
+  "campaign_name": "api:+380672689825",
+  "ringing_timeout": 45,
+  "max_call_duration": 300,
+  "dial_number": "0672689825",
+  "caller_number": "+380443002742"
+}`}</CodeBlock>
+
+      <div className="rounded-lg overflow-hidden my-4" style={{ border: '1px solid var(--c-border)' }}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ background: 'var(--c-bg2)', borderBottom: '1px solid var(--c-border)' }}>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Field</th>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['provider', 'SIP provider used (zadarma, skyetel)'],
+              ['trunk_id', 'LiveKit SIP trunk identifier'],
+              ['trunk_name', 'Human-readable trunk name'],
+              ['trunk_country', 'Country code of the trunk'],
+              ['dial_mode', 'Dialing method (sip, pstn)'],
+              ['attempt', 'Current attempt number'],
+              ['max_attempts', 'Maximum retry attempts'],
+              ['caller_id', 'Outbound caller ID shown to the recipient'],
+              ['caller_number', 'Actual number used for the call'],
+              ['dial_number', 'Number being dialed (local format)'],
+              ['contact_name', 'Contact name if available'],
+              ['ringing_timeout', 'Max seconds to wait for answer'],
+              ['max_call_duration', 'Max call duration in seconds'],
+            ].map(([field, desc]) => (
+              <tr key={field} style={{ borderBottom: '1px solid var(--c-border-light)' }}>
+                <td className="px-4 py-2"><code className="text-xs text-blue-400">{field}</code></td>
+                <td className="px-4 py-2" style={{ color: 'var(--c-text2)' }}>{desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">Call Result</h3>
+      <CodeBlock>{`{
+  "status": "completed",
+  "detail": "duration=38s, disconnect=CLIENT_INITIATED"
+}`}</CodeBlock>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">Call Events</h3>
+      <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+        Calls emit timestamped events throughout their lifecycle:
+      </p>
+      <div className="rounded-lg overflow-hidden my-4" style={{ border: '1px solid var(--c-border)' }}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ background: 'var(--c-bg2)', borderBottom: '1px solid var(--c-border)' }}>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Event</th>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Description</th>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['call_start', 'Call initiated', '—'],
+              ['room_created', 'LiveKit room created', 'room ID'],
+              ['bot_started', 'AI bot process started', 'PID'],
+              ['sip_invite', 'SIP INVITE sent', 'trunk, to, from, room'],
+              ['sip_participant_created', 'SIP participant joined room', 'participant ID'],
+              ['call_answered', 'Callee answered', 'timestamp'],
+              ['bot_ready', 'Bot ready to speak', '—'],
+              ['greeting_start', 'Agent greeting started', '—'],
+              ['function_call', 'Flow function triggered', 'function name, arguments'],
+              ['call_end', 'Call ended', 'duration, disconnect reason'],
+              ['bot_stopped', 'Bot process terminated', '—'],
+              ['room_closed', 'LiveKit room closed', '—'],
+            ].map(([event, desc, data]) => (
+              <tr key={event} style={{ borderBottom: '1px solid var(--c-border-light)' }}>
+                <td className="px-4 py-2"><code className="text-xs text-blue-400">{event}</code></td>
+                <td className="px-4 py-2" style={{ color: 'var(--c-text2)' }}>{desc}</td>
+                <td className="px-4 py-2" style={{ color: 'var(--c-text3)' }}>{data}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Caller ID */}
+      <h2 id="caller-id" className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Caller ID</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        The <code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>caller_id</code> is the phone number displayed to the recipient when your agent calls them. It is determined by the SIP provider and trunk configuration.
+      </p>
+      <ul className="text-sm space-y-2 mb-4" style={{ color: 'var(--c-text2)' }}>
+        <li><strong style={{ color: 'var(--c-text)' }}>caller_number</strong> — The actual outbound number used by the SIP trunk (e.g. <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>+380443002742</code>)</li>
+        <li><strong style={{ color: 'var(--c-text)' }}>caller_id</strong> — Custom caller ID override, if supported by the provider. Set to <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>null</code> to use the trunk's default number.</li>
+        <li><strong style={{ color: 'var(--c-text)' }}>dial_number</strong> — The destination number in local format as sent to the provider (e.g. <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>0672689825</code> instead of <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>+380672689825</code>)</li>
+      </ul>
+
+      <Callout type="info">
+        Not all providers support custom caller ID. Zadarma requires the caller ID to be a verified number from your PBX. Skyetel allows any number from your account.
+      </Callout>
+
+      <CodeBlock title="Create call with custom caller ID">{`const call = await agent.calls.create({
+  phone: "+380672689825",
+  agentId: "your-agent-id",
+  callerId: "+380443002742",  // shown to recipient
+});`}</CodeBlock>
+
       <PageNav
         prev={{ label: 'Errors', path: '/docs/errors' }}
         next={{ label: 'API Reference', path: '/api' }}
-
       />
     </>
   )
