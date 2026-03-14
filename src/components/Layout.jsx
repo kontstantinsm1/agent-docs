@@ -1,12 +1,14 @@
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Search, Menu, X, ChevronRight, ExternalLink } from 'lucide-react'
+import { Search, Menu, X, ChevronRight, ExternalLink, Sun, Moon } from 'lucide-react'
 import { topTabs, sidebars } from '../data/navigation'
+import { useTheme } from './ThemeProvider'
 
 export default function Layout({ children }) {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const { theme, toggle } = useTheme()
 
   useEffect(() => setMobileOpen(false), [location.pathname])
 
@@ -33,16 +35,14 @@ export default function Layout({ children }) {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="fixed top-0 inset-x-0 h-14 z-50 bg-[#09090b]/80 backdrop-blur-xl border-b border-zinc-800">
+      <header className="fixed top-0 inset-x-0 h-14 z-50 backdrop-blur-xl border-b" style={{ background: `color-mix(in srgb, var(--c-bg) 80%, transparent)`, borderColor: 'var(--c-border)' }}>
         <div className="h-full flex items-center px-5 gap-6">
-          <button className="lg:hidden text-zinc-400" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button className="lg:hidden" style={{ color: 'var(--c-text3)' }} onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          <Link to="/docs" className="flex items-center gap-2.5 shrink-0 text-white no-underline">
-            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white">
-              S
-            </div>
+          <Link to="/docs" className="flex items-center gap-2 shrink-0 no-underline" style={{ color: 'var(--c-text)' }}>
+            <img src="https://smartwaylabs.com/wp-content/uploads/2024/11/cropped-cropped-cropped-cropped-cropped-Method-Draw-Image-22-1-1-59x51.png" alt="Smart Way Labs" className="h-6 w-auto" />
             <span className="text-[15px] font-semibold tracking-tight">Smart Way Labs</span>
           </Link>
 
@@ -57,11 +57,11 @@ export default function Layout({ children }) {
                 <Link
                   key={tab.path}
                   to={tab.path}
-                  className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors no-underline ${
-                    isActive
-                      ? 'text-white bg-zinc-800'
-                      : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
-                  }`}
+                  className="px-3 py-1.5 rounded-md text-[13px] font-medium transition-colors no-underline"
+                  style={{
+                    color: isActive ? 'var(--c-text)' : 'var(--c-text3)',
+                    background: isActive ? 'var(--c-surface)' : 'transparent',
+                  }}
                 >
                   {tab.label}
                 </Link>
@@ -72,20 +72,32 @@ export default function Layout({ children }) {
           {/* Search */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-500 text-[13px] hover:border-zinc-700 transition-colors cursor-pointer min-w-[180px]"
+            className="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] transition-colors cursor-pointer min-w-[180px]"
+            style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)', color: 'var(--c-text3)' }}
           >
             <Search size={14} className="opacity-50" />
             <span className="hidden sm:inline">Search docs...</span>
-            <kbd className="ml-auto text-[11px] px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 font-sans">
+            <kbd className="ml-auto text-[11px] px-1.5 py-0.5 rounded font-sans" style={{ background: 'var(--c-bg)', border: '1px solid var(--c-border)' }}>
               ⌘K
             </kbd>
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            className="p-1.5 rounded-md transition-colors cursor-pointer"
+            style={{ color: 'var(--c-text3)' }}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
           </button>
 
           <a
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
-            className="text-zinc-500 hover:text-white transition-colors hidden sm:block"
+            className="transition-colors hidden sm:block"
+            style={{ color: 'var(--c-text3)' }}
           >
             <ExternalLink size={16} />
           </a>
@@ -103,14 +115,15 @@ export default function Layout({ children }) {
       <div className="flex pt-14">
         {/* Sidebar */}
         <aside
-          className={`fixed top-14 bottom-0 w-64 bg-[#09090b] border-r border-zinc-800 overflow-y-auto z-40 transition-transform lg:translate-x-0 ${
+          className={`fixed top-14 bottom-0 w-64 overflow-y-auto z-40 transition-transform lg:translate-x-0 ${
             mobileOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
+          style={{ background: 'var(--c-bg)', borderRight: '1px solid var(--c-border)' }}
         >
           <nav className="py-4">
             {sidebarSections.map((section) => (
               <div key={section.title} className="mb-2">
-                <div className="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-zinc-600">
+                <div className="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: 'var(--c-text3)' }}>
                   {section.title}
                 </div>
                 {section.links.map((link) => (
@@ -145,7 +158,8 @@ function SidebarLink({ label, path, method, hash }) {
     return (
       <a
         href={hash}
-        className="flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors no-underline"
+        className="flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 border-transparent transition-colors no-underline"
+        style={{ color: 'var(--c-text2)' }}
       >
         {label}
       </a>
@@ -160,9 +174,10 @@ function SidebarLink({ label, path, method, hash }) {
         `flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 transition-colors no-underline ${
           isActive
             ? 'border-blue-500 text-blue-400 bg-blue-500/5'
-            : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+            : 'border-transparent'
         }`
       }
+      style={({ isActive }) => isActive ? {} : { color: 'var(--c-text2)' }}
     >
       {method && (
         <span className={`text-[10px] font-bold font-mono px-1.5 py-px rounded min-w-[36px] text-center ${methodColors[method] || ''}`}>
@@ -190,33 +205,35 @@ function SearchModal({ onClose }) {
     : []
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[15vh]" onClick={onClose}>
-      <div className="bg-[#131316] border border-zinc-800 rounded-xl w-[520px] max-h-[400px] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-3 px-4 border-b border-zinc-800">
-          <Search size={16} className="text-zinc-500 shrink-0" />
+    <div className="fixed inset-0 z-[100] backdrop-blur-sm flex items-start justify-center pt-[15vh]" style={{ background: 'var(--c-overlay)' }} onClick={onClose}>
+      <div className="rounded-xl w-[520px] max-h-[400px] overflow-hidden shadow-2xl" style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 px-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
+          <Search size={16} style={{ color: 'var(--c-text3)' }} className="shrink-0" />
           <input
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search documentation..."
-            className="flex-1 bg-transparent border-0 outline-none text-[15px] text-white py-3.5 placeholder:text-zinc-600"
+            className="flex-1 bg-transparent border-0 outline-none text-[15px] py-3.5"
+            style={{ color: 'var(--c-text)', '--tw-placeholder-color': 'var(--c-text3)' }}
           />
         </div>
         <div className="overflow-y-auto max-h-[320px] p-2">
-          {!query && <div className="py-8 text-center text-zinc-600 text-sm">Type to search...</div>}
-          {query && !filtered.length && <div className="py-8 text-center text-zinc-600 text-sm">No results found</div>}
+          {!query && <div className="py-8 text-center text-sm" style={{ color: 'var(--c-text3)' }}>Type to search...</div>}
+          {query && !filtered.length && <div className="py-8 text-center text-sm" style={{ color: 'var(--c-text3)' }}>No results found</div>}
           {filtered.map((item) => (
             <Link
               key={item.path + item.label}
               to={item.path}
               onClick={onClose}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-zinc-800/50 text-white no-underline transition-colors"
+              className="flex items-center justify-between px-3 py-2.5 rounded-lg no-underline transition-colors"
+              style={{ color: 'var(--c-text)' }}
             >
               <div>
                 <div className="text-sm font-medium">{item.label}</div>
-                <div className="text-xs text-zinc-600">{item.section}</div>
+                <div className="text-xs" style={{ color: 'var(--c-text3)' }}>{item.section}</div>
               </div>
-              <ChevronRight size={14} className="text-zinc-600" />
+              <ChevronRight size={14} style={{ color: 'var(--c-text3)' }} />
             </Link>
           ))}
         </div>

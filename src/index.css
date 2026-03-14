@@ -8,14 +8,66 @@
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
+/* ---- Theme variables ---- */
+:root, .dark {
+  --c-bg: #09090b;
+  --c-bg2: #0f0f12;
+  --c-surface: #131316;
+  --c-surface-hover: #1a1a1f;
+  --c-border: #27272a;
+  --c-border-light: #1f1f23;
+  --c-text: #fafafa;
+  --c-text2: #a1a1aa;
+  --c-text3: #71717a;
+  --c-code-bg: #0c0c14;
+  --c-code-border: #1e1e2e;
+  --c-overlay: rgba(0,0,0,0.6);
+  --c-scrollbar: #27272a;
+  --c-scrollbar-hover: #3f3f46;
+}
+
+.light {
+  --c-bg: #ffffff;
+  --c-bg2: #f9fafb;
+  --c-surface: #f3f4f6;
+  --c-surface-hover: #e5e7eb;
+  --c-border: #e5e7eb;
+  --c-border-light: #f3f4f6;
+  --c-text: #111827;
+  --c-text2: #4b5563;
+  --c-text3: #9ca3af;
+  --c-code-bg: #f1f5f9;
+  --c-code-border: #e2e8f0;
+  --c-overlay: rgba(0,0,0,0.3);
+  --c-scrollbar: #d1d5db;
+  --c-scrollbar-hover: #9ca3af;
+}
+
 body {
   margin: 0;
-  background: #09090b;
-  color: #fafafa;
+  background: var(--c-bg);
+  color: var(--c-text);
   font-family: var(--font-sans);
+  transition: background 0.2s, color 0.2s;
 }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+::-webkit-scrollbar-thumb { background: var(--c-scrollbar); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--c-scrollbar-hover); }
+
+/* Theme-aware utility overrides for pages using zinc-* */
+.light .text-zinc-400 { color: #6b7280 !important; }
+.light .text-zinc-500 { color: #6b7280 !important; }
+.light .text-zinc-600 { color: #9ca3af !important; }
+.light .text-zinc-300 { color: #374151 !important; }
+.light .text-zinc-200 { color: #1f2937 !important; }
+.light .border-zinc-800 { border-color: #e5e7eb !important; }
+.light .border-zinc-700 { border-color: #d1d5db !important; }
+.light .bg-zinc-800 { background-color: #f1f5f9 !important; }
+.light .bg-zinc-900 { background-color: #f3f4f6 !important; }
+.light .bg-zinc-900\/50 { background-color: rgba(243,244,246,0.5) !important; }
+.light .bg-\[#0c0c14\] { background-color: #f1f5f9 !important; }
+.light .bg-\[#131316\] { background-color: #f3f4f6 !important; }
+.light .bg-\[#0f0f12\] { background-color: #f9fafb !important; }
+.light .border-\[#0c0c14\] { border-color: #e2e8f0 !important; }

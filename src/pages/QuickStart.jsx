@@ -5,16 +5,16 @@ export default function QuickStart() {
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Quick Start</h1>
-      <p className="text-base text-zinc-400 mb-8">Make your first AI phone call in 3 steps.</p>
+      <p className="text-base mb-8" style={{ color: 'var(--c-text2)' }}>Make your first AI phone call in 3 steps.</p>
 
       <h2 className="text-lg font-semibold mb-3">Prerequisites</h2>
-      <ul className="text-sm text-zinc-400 space-y-1.5 mb-8 list-disc list-inside">
+      <ul className="text-sm space-y-1.5 mb-8 list-disc list-inside" style={{ color: 'var(--c-text2)' }}>
         <li>An Agent Core API key (get from server administrator)</li>
         <li>A running Agent Core server</li>
-        <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded">curl</code> or any HTTP client</li>
+        <li><code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)', border: '1px solid var(--c-code-border)' }}>curl</code> or any HTTP client</li>
       </ul>
 
-      <div className="border-t border-zinc-800 pt-8 space-y-8">
+      <div className="pt-8 space-y-8" style={{ borderTop: '1px solid var(--c-border)' }}>
         <Step n={1} title="Create an Agent" desc="Define the AI personality, voice, and behavior.">
           <CodeBlock>{`curl -X POST /api/v1/agents \\
   -H "X-API-Key: your-key" \\
@@ -71,7 +71,7 @@ function Step({ n, title, desc, children }) {
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="text-base font-semibold mb-1">{title}</h3>
-        <p className="text-sm text-zinc-400 mb-2">{desc}</p>
+        <p className="text-sm mb-2" style={{ color: 'var(--c-text2)' }}>{desc}</p>
         {children}
       </div>
     </div>

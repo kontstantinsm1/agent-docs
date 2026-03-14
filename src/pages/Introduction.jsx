@@ -11,7 +11,7 @@ export default function Introduction() {
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Agent Core API</h1>
-      <p className="text-base text-zinc-400 mb-8 leading-relaxed max-w-xl">
+      <p className="text-base mb-8 leading-relaxed max-w-xl" style={{ color: 'var(--c-text2)' }}>
         Build AI-powered voice agents that make phone calls. Create agents with custom personalities, initiate outbound calls, and receive results via webhooks.
       </p>
 
@@ -20,33 +20,41 @@ export default function Introduction() {
           <Link
             key={c.to}
             to={c.to}
-            className="group flex flex-col p-5 rounded-xl border border-zinc-800 bg-[#131316] hover:border-blue-500/30 hover:bg-zinc-800/30 transition-all no-underline"
+            className="group flex flex-col p-5 rounded-xl hover:border-blue-500/30 transition-all no-underline"
+            style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)' }}
           >
             <c.icon size={22} className="text-blue-400 mb-3" />
-            <div className="text-[15px] font-semibold text-white mb-1 flex items-center gap-1.5">
+            <div className="text-[15px] font-semibold mb-1 flex items-center gap-1.5" style={{ color: 'var(--c-text)' }}>
               {c.title}
               <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-400" />
             </div>
-            <div className="text-[13px] text-zinc-500 leading-relaxed">{c.desc}</div>
+            <div className="text-[13px] leading-relaxed" style={{ color: 'var(--c-text3)' }}>{c.desc}</div>
           </Link>
         ))}
       </div>
 
-      <div className="border-t border-zinc-800 pt-8 mt-8">
+      <div className="pt-8 mt-8" style={{ borderTop: '1px solid var(--c-border)' }}>
         <h2 className="text-xl font-semibold mb-4">Key Features</h2>
-        <ul className="space-y-2 text-sm text-zinc-400">
-          <li className="flex items-start gap-2"><span className="text-blue-400 mt-1">&#8226;</span><span><strong className="text-white">AI Voice Agents</strong> — Configurable LLM-powered agents with customizable voices, personalities, and behavior</span></li>
-          <li className="flex items-start gap-2"><span className="text-blue-400 mt-1">&#8226;</span><span><strong className="text-white">Outbound Calling</strong> — Initiate calls to any phone number with a single API request</span></li>
-          <li className="flex items-start gap-2"><span className="text-blue-400 mt-1">&#8226;</span><span><strong className="text-white">Multi-Provider Telephony</strong> — Support for Skyetel, Zadarma, and other SIP providers</span></li>
-          <li className="flex items-start gap-2"><span className="text-blue-400 mt-1">&#8226;</span><span><strong className="text-white">Real-time Webhooks</strong> — Get notified when calls are queued, started, completed, or fail</span></li>
-          <li className="flex items-start gap-2"><span className="text-blue-400 mt-1">&#8226;</span><span><strong className="text-white">Transcripts</strong> — Full conversation transcripts for every call</span></li>
-          <li className="flex items-start gap-2"><span className="text-blue-400 mt-1">&#8226;</span><span><strong className="text-white">Multiple TTS/STT</strong> — Cartesia, ElevenLabs, Deepgram and more</span></li>
+        <ul className="space-y-2 text-sm" style={{ color: 'var(--c-text2)' }}>
+          {[
+            ['AI Voice Agents', 'Configurable LLM-powered agents with customizable voices, personalities, and behavior'],
+            ['Outbound Calling', 'Initiate calls to any phone number with a single API request'],
+            ['Multi-Provider Telephony', 'Support for Skyetel, Zadarma, and other SIP providers'],
+            ['Real-time Webhooks', 'Get notified when calls are queued, started, completed, or fail'],
+            ['Transcripts', 'Full conversation transcripts for every call'],
+            ['Multiple TTS/STT', 'Cartesia, ElevenLabs, Deepgram and more'],
+          ].map(([title, desc]) => (
+            <li key={title} className="flex items-start gap-2">
+              <span className="text-blue-400 mt-1">&#8226;</span>
+              <span><strong style={{ color: 'var(--c-text)' }}>{title}</strong> — {desc}</span>
+            </li>
+          ))}
         </ul>
       </div>
 
-      <div className="border-t border-zinc-800 pt-8 mt-8">
+      <div className="pt-8 mt-8" style={{ borderTop: '1px solid var(--c-border)' }}>
         <h2 className="text-xl font-semibold mb-4">Architecture</h2>
-        <p className="text-sm text-zinc-400 mb-4">
+        <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
           Agent Core is built on <a href="https://pipecat.ai" className="text-blue-400 hover:underline" target="_blank" rel="noreferrer">Pipecat</a> and <a href="https://livekit.io" className="text-blue-400 hover:underline" target="_blank" rel="noreferrer">LiveKit</a>, providing a robust pipeline for real-time voice AI.
         </p>
         <ArchDiagram />
@@ -58,51 +66,42 @@ export default function Introduction() {
 }
 
 function ArchDiagram() {
-  const boxClass = "fill-[#131316] stroke-zinc-700"
-  const textMain = "fill-white text-[13px] font-semibold"
-  const textSub = "fill-zinc-500 text-[11px]"
-  const arrow = "stroke-zinc-600 fill-none"
-  const arrowHead = "fill-zinc-600"
-
   return (
-    <div className="my-4 p-6 rounded-xl border border-zinc-800 bg-[#0c0c14] overflow-x-auto">
+    <div className="my-4 p-6 rounded-xl overflow-x-auto" style={{ background: 'var(--c-code-bg)', border: '1px solid var(--c-code-border)' }}>
       <svg viewBox="0 0 680 260" className="w-full max-w-[600px] mx-auto" xmlns="http://www.w3.org/2000/svg">
         {/* Top row boxes */}
-        <rect x="20" y="30" width="160" height="64" rx="10" className={boxClass} strokeWidth="1.5" />
-        <text x="100" y="56" textAnchor="middle" className={textMain}>Your App</text>
-        <text x="100" y="74" textAnchor="middle" className={textSub}>REST API</text>
+        <rect x="20" y="30" width="160" height="64" rx="10" fill="var(--c-surface)" stroke="var(--c-border)" strokeWidth="1.5" />
+        <text x="100" y="56" textAnchor="middle" fill="var(--c-text)" className="text-[13px] font-semibold">Your App</text>
+        <text x="100" y="74" textAnchor="middle" fill="var(--c-text3)" className="text-[11px]">REST API</text>
 
-        <rect x="260" y="30" width="160" height="64" rx="10" className={boxClass} strokeWidth="1.5" style={{ stroke: '#3b82f6', strokeWidth: 1.5 }} />
-        <text x="340" y="56" textAnchor="middle" className={textMain}>Agent Core</text>
-        <text x="340" y="74" textAnchor="middle" className={textSub}>Pipecat</text>
+        <rect x="260" y="30" width="160" height="64" rx="10" fill="var(--c-surface)" stroke="#3b82f6" strokeWidth="1.5" />
+        <text x="340" y="56" textAnchor="middle" fill="var(--c-text)" className="text-[13px] font-semibold">Agent Core</text>
+        <text x="340" y="74" textAnchor="middle" fill="var(--c-text3)" className="text-[11px]">Pipecat</text>
 
-        <rect x="500" y="30" width="160" height="64" rx="10" className={boxClass} strokeWidth="1.5" />
-        <text x="580" y="56" textAnchor="middle" className={textMain}>SIP / PSTN</text>
-        <text x="580" y="74" textAnchor="middle" className={textSub}>LiveKit</text>
+        <rect x="500" y="30" width="160" height="64" rx="10" fill="var(--c-surface)" stroke="var(--c-border)" strokeWidth="1.5" />
+        <text x="580" y="56" textAnchor="middle" fill="var(--c-text)" className="text-[13px] font-semibold">SIP / PSTN</text>
+        <text x="580" y="74" textAnchor="middle" fill="var(--c-text3)" className="text-[11px]">LiveKit</text>
 
-        {/* Arrows top row */}
-        <line x1="180" y1="62" x2="254" y2="62" className={arrow} strokeWidth="1.5" />
-        <polygon points="254,57 264,62 254,67" className={arrowHead} />
+        {/* Arrows */}
+        <line x1="180" y1="62" x2="254" y2="62" stroke="var(--c-text3)" strokeWidth="1.5" fill="none" />
+        <polygon points="254,57 264,62 254,67" fill="var(--c-text3)" />
+        <line x1="420" y1="62" x2="494" y2="62" stroke="var(--c-text3)" strokeWidth="1.5" fill="none" />
+        <polygon points="494,57 504,62 494,67" fill="var(--c-text3)" />
 
-        <line x1="420" y1="62" x2="494" y2="62" className={arrow} strokeWidth="1.5" />
-        <polygon points="494,57 504,62 494,67" className={arrowHead} />
-
-        {/* Vertical line from Agent Core */}
-        <line x1="340" y1="94" x2="340" y2="140" className={arrow} strokeWidth="1.5" />
-
-        {/* Branch lines */}
-        <line x1="260" y1="140" x2="420" y2="140" className={arrow} strokeWidth="1.5" />
-        <line x1="280" y1="140" x2="280" y2="170" className={arrow} strokeWidth="1.5" />
-        <line x1="400" y1="140" x2="400" y2="170" className={arrow} strokeWidth="1.5" />
+        {/* Vertical + branch */}
+        <line x1="340" y1="94" x2="340" y2="140" stroke="var(--c-text3)" strokeWidth="1.5" />
+        <line x1="260" y1="140" x2="420" y2="140" stroke="var(--c-text3)" strokeWidth="1.5" />
+        <line x1="280" y1="140" x2="280" y2="170" stroke="var(--c-text3)" strokeWidth="1.5" />
+        <line x1="400" y1="140" x2="400" y2="170" stroke="var(--c-text3)" strokeWidth="1.5" />
 
         {/* Bottom boxes */}
-        <rect x="210" y="170" width="140" height="64" rx="10" className={boxClass} strokeWidth="1.5" />
-        <text x="280" y="198" textAnchor="middle" className={textMain}>LLM</text>
-        <text x="280" y="216" textAnchor="middle" className={textSub}>GPT-4o, Claude, etc.</text>
+        <rect x="210" y="170" width="140" height="64" rx="10" fill="var(--c-surface)" stroke="var(--c-border)" strokeWidth="1.5" />
+        <text x="280" y="198" textAnchor="middle" fill="var(--c-text)" className="text-[13px] font-semibold">LLM</text>
+        <text x="280" y="216" textAnchor="middle" fill="var(--c-text3)" className="text-[11px]">GPT-4o, Claude, etc.</text>
 
-        <rect x="330" y="170" width="140" height="64" rx="10" className={boxClass} strokeWidth="1.5" />
-        <text x="400" y="198" textAnchor="middle" className={textMain}>TTS / STT</text>
-        <text x="400" y="216" textAnchor="middle" className={textSub}>Cartesia, Deepgram</text>
+        <rect x="330" y="170" width="140" height="64" rx="10" fill="var(--c-surface)" stroke="var(--c-border)" strokeWidth="1.5" />
+        <text x="400" y="198" textAnchor="middle" fill="var(--c-text)" className="text-[13px] font-semibold">TTS / STT</text>
+        <text x="400" y="216" textAnchor="middle" fill="var(--c-text3)" className="text-[11px]">Cartesia, Deepgram</text>
       </svg>
     </div>
   )
@@ -110,17 +109,17 @@ function ArchDiagram() {
 
 export function PageNav({ prev, next }) {
   return (
-    <div className="flex justify-between items-center mt-12 pt-6 border-t border-zinc-800">
+    <div className="flex justify-between items-center mt-12 pt-6" style={{ borderTop: '1px solid var(--c-border)' }}>
       {prev ? (
-        <Link to={prev.path} className="flex flex-col items-start px-4 py-3 rounded-lg border border-zinc-800 hover:border-zinc-700 text-sm no-underline transition-colors">
-          <span className="text-[11px] text-zinc-600">Previous</span>
-          <span className="text-zinc-300">{prev.label}</span>
+        <Link to={prev.path} className="flex flex-col items-start px-4 py-3 rounded-lg text-sm no-underline transition-colors" style={{ border: '1px solid var(--c-border)' }}>
+          <span className="text-[11px]" style={{ color: 'var(--c-text3)' }}>Previous</span>
+          <span style={{ color: 'var(--c-text2)' }}>{prev.label}</span>
         </Link>
       ) : <div />}
       {next ? (
-        <Link to={next.path} className="flex flex-col items-end px-4 py-3 rounded-lg border border-zinc-800 hover:border-zinc-700 text-sm no-underline transition-colors ml-auto">
-          <span className="text-[11px] text-zinc-600">Next</span>
-          <span className="text-zinc-300">{next.label}</span>
+        <Link to={next.path} className="flex flex-col items-end px-4 py-3 rounded-lg text-sm no-underline transition-colors ml-auto" style={{ border: '1px solid var(--c-border)' }}>
+          <span className="text-[11px]" style={{ color: 'var(--c-text3)' }}>Next</span>
+          <span style={{ color: 'var(--c-text2)' }}>{next.label}</span>
         </Link>
       ) : <div />}
     </div>

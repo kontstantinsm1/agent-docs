@@ -8,15 +8,15 @@ const methodColors = {
 
 export default function Endpoint({ method, path, description, children }) {
   return (
-    <div className="my-5 rounded-lg border border-zinc-800 overflow-hidden bg-[#131316]">
-      <div className="flex items-center gap-3 px-5 py-3.5 border-b border-zinc-800/50 bg-[#0f0f12]">
+    <div className="my-5 rounded-lg overflow-hidden" style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)' }}>
+      <div className="flex items-center gap-3 px-5 py-3.5" style={{ borderBottom: '1px solid var(--c-border-light)', background: 'var(--c-bg2)' }}>
         <span className={`px-2 py-0.5 rounded text-[11px] font-bold font-mono ${methodColors[method] || ''}`}>
           {method}
         </span>
-        <code className="text-sm font-medium text-zinc-200">{path}</code>
+        <code className="text-sm font-medium" style={{ color: 'var(--c-text)' }}>{path}</code>
       </div>
       <div className="px-5 py-4">
-        {description && <p className="text-sm text-zinc-400 mb-3">{description}</p>}
+        {description && <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>{description}</p>}
         {children}
       </div>
     </div>
@@ -27,15 +27,15 @@ export function ParamTable({ params }) {
   return (
     <table className="w-full text-sm my-3">
       <thead>
-        <tr className="border-b border-zinc-800">
-          <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 pb-2 pr-4">Parameter</th>
-          <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 pb-2 pr-4">Type</th>
-          <th className="text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-500 pb-2">Description</th>
+        <tr style={{ borderBottom: '1px solid var(--c-border)' }}>
+          <th className="text-left text-[11px] font-semibold uppercase tracking-wider pb-2 pr-4" style={{ color: 'var(--c-text3)' }}>Parameter</th>
+          <th className="text-left text-[11px] font-semibold uppercase tracking-wider pb-2 pr-4" style={{ color: 'var(--c-text3)' }}>Type</th>
+          <th className="text-left text-[11px] font-semibold uppercase tracking-wider pb-2" style={{ color: 'var(--c-text3)' }}>Description</th>
         </tr>
       </thead>
       <tbody>
         {params.map((p) => (
-          <tr key={p.name} className="border-b border-zinc-800/50">
+          <tr key={p.name} style={{ borderBottom: '1px solid var(--c-border-light)' }}>
             <td className="py-2.5 pr-4">
               <code className="text-[13px] text-blue-400">{p.name}</code>
             </td>
@@ -44,10 +44,10 @@ export function ParamTable({ params }) {
               {p.required ? (
                 <span className="ml-1.5 text-[10px] font-semibold text-red-400">required</span>
               ) : (
-                <span className="ml-1.5 text-[10px] text-zinc-600">optional</span>
+                <span className="ml-1.5 text-[10px]" style={{ color: 'var(--c-text3)' }}>optional</span>
               )}
             </td>
-            <td className="py-2.5 text-zinc-400">{p.description}</td>
+            <td className="py-2.5" style={{ color: 'var(--c-text2)' }}>{p.description}</td>
           </tr>
         ))}
       </tbody>

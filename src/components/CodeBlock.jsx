@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 
-export default function CodeBlock({ children, title, language }) {
+export default function CodeBlock({ children, title }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -12,10 +12,10 @@ export default function CodeBlock({ children, title, language }) {
   }
 
   return (
-    <div className="group relative my-3 rounded-lg border border-zinc-800 bg-[#0c0c14] overflow-hidden">
+    <div className="group relative my-3 rounded-lg overflow-hidden" style={{ background: 'var(--c-code-bg)', border: '1px solid var(--c-code-border)' }}>
       {title && (
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800 bg-zinc-900/50">
-          <span className="text-xs font-medium text-zinc-500">{title}</span>
+        <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: '1px solid var(--c-code-border)', background: 'var(--c-surface)' }}>
+          <span className="text-xs font-medium" style={{ color: 'var(--c-text3)' }}>{title}</span>
           <CopyBtn copied={copied} onClick={handleCopy} />
         </div>
       )}
@@ -37,7 +37,8 @@ function CopyBtn({ copied, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-zinc-500 hover:text-zinc-300 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 transition-colors cursor-pointer"
+      className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs transition-colors cursor-pointer"
+      style={{ color: 'var(--c-text3)', background: 'var(--c-surface)', border: '1px solid var(--c-border)' }}
     >
       {copied ? <Check size={12} /> : <Copy size={12} />}
       {copied ? 'Copied' : 'Copy'}
