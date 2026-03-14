@@ -94,6 +94,7 @@ export const sidebars = {
       title: 'Advanced',
       links: [
         { label: 'Webhook Verification', path: '/sdk', hash: '#webhook-verification' },
+        { label: 'Step Webhooks', path: '/sdk', hash: '#step-webhooks' },
         { label: 'Error Handling', path: '/sdk', hash: '#error-handling' },
         { label: 'Types', path: '/sdk', hash: '#types' },
         { label: 'Call Log', path: '/sdk', hash: '#call-log' },

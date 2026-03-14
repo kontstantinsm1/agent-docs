@@ -27,7 +27,8 @@ export default function ClientSdk() {
 const agent = new AgentCore({
   apiKey: process.env.AGENT_CORE_API_KEY!,
   baseUrl: process.env.AGENT_CORE_URL!,
-  webhookSecret: process.env.WEBHOOK_SECRET, // optional
+  webhookSecret: process.env.WEBHOOK_SECRET,
+  defaultStepSave: true, // send webhook after each flow step (default: true)
 });`}</CodeBlock>
 
       <CodeBlock title="Make a call">{`const call = await agent.calls.create({
@@ -50,6 +51,7 @@ console.log(transcript.transcript);`}</CodeBlock>
         { name: 'apiKey', type: 'string', required: true, desc: 'Your Agent Core API key' },
         { name: 'baseUrl', type: 'string', required: true, desc: 'Server URL (e.g. https://your-server:8008)' },
         { name: 'webhookSecret', type: 'string', required: false, desc: 'Secret for verifying webhook signatures' },
+        { name: 'defaultStepSave', type: 'boolean', required: false, desc: 'Send call.step webhook after each flow function (default: true)' },
       ]} />
 
       {/* Calls */}
@@ -63,6 +65,7 @@ console.log(transcript.transcript);`}</CodeBlock>
           { name: 'agentId', type: 'string', required: false, desc: 'Agent ID to use' },
           { name: 'webhookUrl', type: 'string', required: false, desc: 'URL for call events' },
           { name: 'metadata', type: 'Record<string, string>', required: false, desc: 'Custom key-value metadata' },
+          { name: 'stepSave', type: 'boolean', required: false, desc: 'Override defaultStepSave for this call' },
         ]}
         returns="Promise<Call>"
       />
@@ -178,6 +181,84 @@ export async function POST(req: Request) {
       <Callout type="info">
         Use <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>verifyWebhookAsync</code> for Next.js, Vercel Edge, Cloudflare Workers, and other edge runtimes.
       </Callout>
+
+      {/* Step Webhooks */}
+      <h2 id="step-webhooks" className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Step Webhooks</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        When <code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>stepSave</code> is enabled (default), Agent Core sends a <code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>call.step</code> webhook after each flow function call. This lets you save data in real-time as the conversation progresses, rather than waiting for the call to end.
+      </p>
+
+      <CodeBlock title="call.step webhook payload">{`{
+  "event": "call.step",
+  "external_id": "550e8400-e29b-41d4-a716-446655440000",
+  "function": "collect_family_name",
+  "step_data": {
+    "family_name": "Марко"
+  },
+  "fields": {
+    "family_name": "Марко"
+  }
+}`}</CodeBlock>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">stepSave: true vs false</h3>
+      <div className="rounded-lg overflow-hidden my-4" style={{ border: '1px solid var(--c-border)' }}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ background: 'var(--c-bg2)', borderBottom: '1px solid var(--c-border)' }}>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Mode</th>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Webhooks sent</th>
+              <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--c-text3)' }}>Use case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid var(--c-border-light)' }}>
+              <td className="px-4 py-2.5"><code className="text-xs text-emerald-400 font-semibold">stepSave: true</code></td>
+              <td className="px-4 py-2.5" style={{ color: 'var(--c-text2)' }}><code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>call.step</code> after each function + <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>call.completed</code> at end</td>
+              <td className="px-4 py-2.5" style={{ color: 'var(--c-text2)' }}>Real-time CRM updates, live dashboards, form filling</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid var(--c-border-light)' }}>
+              <td className="px-4 py-2.5"><code className="text-xs text-zinc-400 font-semibold">stepSave: false</code></td>
+              <td className="px-4 py-2.5" style={{ color: 'var(--c-text2)' }}>Only <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>call.completed</code> at end</td>
+              <td className="px-4 py-2.5" style={{ color: 'var(--c-text2)' }}>Simple integrations, batch processing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <CodeBlock title="Per-call override">{`// Global default: step webhooks enabled
+const agent = new AgentCore({
+  apiKey: "...",
+  baseUrl: "...",
+  defaultStepSave: true,
+});
+
+// Disable for a specific call
+const call = await agent.calls.create({
+  phone: "+380672689825",
+  agentId: "your-agent-id",
+  stepSave: false,  // only send call.completed at end
+});`}</CodeBlock>
+
+      <CodeBlock title="Handle step webhooks">{`export async function POST(req: Request) {
+  const data = await agent.verifyWebhookAsync(
+    await req.text(),
+    req.headers.get("x-webhook-signature") || ""
+  );
+
+  if (data.event === "call.step") {
+    // Real-time: save each field as it's collected
+    await db.updateCall(data.external_id, {
+      [data.function]: data.step_data,
+    });
+  }
+
+  if (data.event === "call.completed") {
+    // Final: all data collected
+    await db.completeCall(data.call_id, data.collected_data);
+  }
+
+  return Response.json({ ok: true });
+}`}</CodeBlock>
 
       {/* Error handling */}
       <h2 id="error-handling" className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Error Handling</h2>

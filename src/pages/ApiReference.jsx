@@ -48,6 +48,7 @@ export function CallCreate() {
           { name: 'agent_id', type: 'string', description: 'Agent ID to use for this call' },
           { name: 'webhook_url', type: 'string', description: 'URL to receive call events' },
           { name: 'metadata', type: 'object', description: 'Custom metadata attached to the call' },
+          { name: 'step_save', type: 'boolean', description: 'Send call.step webhook after each flow function (default: true)' },
         ]} />
         <ResponseLabel />
         <CodeBlock>{`{
@@ -343,9 +344,24 @@ export function WebhookEvents() {
       <ul className="text-sm text-zinc-400 space-y-1.5">
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-blue-400">call.queued</code> — call has been queued for dialing</li>
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-blue-400">call.started</code> — call has connected and agent is speaking</li>
+        <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-purple-400">call.step</code> — flow function completed, partial data collected (requires <code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded">step_save: true</code>)</li>
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-emerald-400">call.completed</code> — call finished successfully</li>
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-red-400">call.failed</code> — call failed with error</li>
       </ul>
+
+      <h3 className="text-base font-semibold mt-6 mb-3">call.step Payload</h3>
+      <p className="text-sm text-zinc-400 mb-3">Sent after each flow function call when <code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded">step_save</code> is enabled:</p>
+      <CodeBlock>{`{
+  "event": "call.step",
+  "external_id": "550e8400-e29b-41d4-...",
+  "function": "collect_family_name",
+  "step_data": {
+    "family_name": "Марко"
+  },
+  "fields": {
+    "family_name": "Марко"
+  }
+}`}</CodeBlock>
       <PageNav prev={{ label: 'Delete Webhook', path: '/api/webhooks/delete' }} next={{ label: 'MCP Server', path: '/tools/mcp-server' }} />
     </>
   )
