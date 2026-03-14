@@ -71,6 +71,8 @@ export default function Layout({ children }) {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
+  const sidebarHasHashes = sidebarSections.some((s) => s.links.some((l) => l.hash))
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -166,7 +168,7 @@ export default function Layout({ children }) {
                   {section.title}
                 </div>
                 {section.links.map((link) => (
-                  <SidebarLink key={link.path + link.label} {...link} activeHash={activeHash} />
+                  <SidebarLink key={link.path + link.label} {...link} activeHash={activeHash} sidebarHasHashes={sidebarHasHashes} />
                 ))}
               </div>
             ))}
@@ -184,7 +186,7 @@ export default function Layout({ children }) {
   )
 }
 
-function SidebarLink({ label, path, method, hash, activeHash }) {
+function SidebarLink({ label, path, method, hash, activeHash, sidebarHasHashes }) {
   const methodColors = {
     GET: 'bg-emerald-500/10 text-emerald-400',
     POST: 'bg-blue-500/10 text-blue-400',
@@ -210,22 +212,23 @@ function SidebarLink({ label, path, method, hash, activeHash }) {
     )
   }
 
-  // If a hash section is active, suppress NavLink highlight for sibling non-hash links on the same path
-  const hasSiblingHash = !!activeHash
+  // Suppress NavLink active state when a hash section is scrolled into view
+  // "Overview" should only highlight when user is at the top (no hash active)
+  const suppressActive = sidebarHasHashes && !!activeHash
 
   return (
     <NavLink
       to={path}
       end
       className={({ isActive }) => {
-        const show = isActive && !hasSiblingHash
+        const show = isActive && !suppressActive
         return `flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 transition-colors no-underline ${
           show
             ? 'border-blue-500 text-blue-400 bg-blue-500/5'
             : 'border-transparent'
         }`
       }}
-      style={({ isActive }) => (isActive && !hasSiblingHash) ? {} : { color: 'var(--c-text2)' }}
+      style={({ isActive }) => (isActive && !suppressActive) ? {} : { color: 'var(--c-text2)' }}
     >
       {method && (
         <span className={`text-[10px] font-bold font-mono px-1.5 py-px rounded min-w-[36px] text-center ${methodColors[method] || ''}`}>
