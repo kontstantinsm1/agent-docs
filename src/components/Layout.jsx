@@ -14,28 +14,40 @@ export default function Layout({ children }) {
 
   // Track which section is in view via IntersectionObserver
   useEffect(() => {
+    setActiveHash('')
     const ids = ['quick-start', 'configuration', 'registries', 'troubleshooting']
-    const observers = []
 
-    const callback = (entries) => {
+    // Track visible sections, pick the first one
+    const visibleSet = new Set()
+
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          setActiveHash('#' + entry.target.id)
+          visibleSet.add(entry.target.id)
+        } else {
+          visibleSet.delete(entry.target.id)
         }
       })
-    }
-
-    const observer = new IntersectionObserver(callback, {
+      // Pick the first visible section in document order
+      const first = ids.find((id) => visibleSet.has(id))
+      setActiveHash(first ? '#' + first : '')
+    }, {
       rootMargin: '-80px 0px -60% 0px',
       threshold: 0,
     })
 
-    ids.forEach((id) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    })
+    // Delay to let DOM render
+    const timer = setTimeout(() => {
+      ids.forEach((id) => {
+        const el = document.getElementById(id)
+        if (el) observer.observe(el)
+      })
+    }, 100)
 
-    return () => observer.disconnect()
+    return () => {
+      clearTimeout(timer)
+      observer.disconnect()
+    }
   }, [location.pathname])
   const { theme, toggle } = useTheme()
 
@@ -200,18 +212,22 @@ function SidebarLink({ label, path, method, hash, activeHash }) {
     )
   }
 
+  // If a hash section is active, suppress NavLink highlight for sibling non-hash links on the same path
+  const hasSiblingHash = !!activeHash
+
   return (
     <NavLink
       to={path}
       end
-      className={({ isActive }) =>
-        `flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 transition-colors no-underline ${
-          isActive
+      className={({ isActive }) => {
+        const show = isActive && !hasSiblingHash
+        return `flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 transition-colors no-underline ${
+          show
             ? 'border-blue-500 text-blue-400 bg-blue-500/5'
             : 'border-transparent'
         }`
-      }
-      style={({ isActive }) => isActive ? {} : { color: 'var(--c-text2)' }}
+      }}
+      style={({ isActive }) => (isActive && !hasSiblingHash) ? {} : { color: 'var(--c-text2)' }}
     >
       {method && (
         <span className={`text-[10px] font-bold font-mono px-1.5 py-px rounded min-w-[36px] text-center ${methodColors[method] || ''}`}>
