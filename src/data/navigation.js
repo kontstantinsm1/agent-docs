@@ -74,6 +74,12 @@ export const sidebars = {
         { label: 'Event Payload', path: '/api/webhooks/events' },
       ],
     },
+    {
+      title: 'Client SDK',
+      links: [
+        { label: 'TypeScript SDK', path: '/docs/sdk' },
+      ],
+    },
   ],
   '/tools': [
     {
