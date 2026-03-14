@@ -20,6 +20,7 @@ export const sidebars = {
         { label: 'Calls & Telephony', path: '/docs/telephony' },
         { label: 'Webhooks', path: '/docs/webhooks' },
         { label: 'Voice Providers', path: '/docs/providers' },
+        { label: 'Errors', path: '/docs/errors' },
       ],
     },
   ],

@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import Introduction from './pages/Introduction'
 import QuickStart from './pages/QuickStart'
 import { Agents, Telephony, Webhooks, Providers } from './pages/Concepts'
+import Errors from './pages/Errors'
 import ApiReference, {
   CallCreate, CallGet, CallList, CallTranscript, CallHangup,
   AgentCreate, AgentList, AgentGet, AgentUpdate, AgentDelete, AgentSchema,
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/docs/telephony" element={<Telephony />} />
           <Route path="/docs/webhooks" element={<Webhooks />} />
           <Route path="/docs/providers" element={<Providers />} />
+          <Route path="/docs/errors" element={<Errors />} />
 
           {/* API Reference */}
           <Route path="/api" element={<ApiReference />} />

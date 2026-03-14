@@ -194,7 +194,7 @@ export function Providers() {
   }
 }`}</CodeBlock>
 
-      <PageNav prev={{ label: 'Webhooks', path: '/docs/webhooks' }} next={{ label: 'API Reference', path: '/api' }} />
+      <PageNav prev={{ label: 'Webhooks', path: '/docs/webhooks' }} next={{ label: 'Errors', path: '/docs/errors' }} />
     </>
   )
 }
