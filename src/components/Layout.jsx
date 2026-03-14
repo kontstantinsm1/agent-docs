@@ -1,13 +1,42 @@
 import { NavLink, Link, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { Search, Menu, X, ChevronRight, ExternalLink, Sun, Moon } from 'lucide-react'
 import { topTabs, sidebars } from '../data/navigation'
 import { useTheme } from './ThemeProvider'
+
+const ActiveHashContext = createContext('')
 
 export default function Layout({ children }) {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [activeHash, setActiveHash] = useState('')
+
+  // Track which section is in view via IntersectionObserver
+  useEffect(() => {
+    const ids = ['quick-start', 'configuration', 'registries', 'troubleshooting']
+    const observers = []
+
+    const callback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveHash('#' + entry.target.id)
+        }
+      })
+    }
+
+    const observer = new IntersectionObserver(callback, {
+      rootMargin: '-80px 0px -60% 0px',
+      threshold: 0,
+    })
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+
+    return () => observer.disconnect()
+  }, [location.pathname])
   const { theme, toggle } = useTheme()
 
   useEffect(() => setMobileOpen(false), [location.pathname])
@@ -127,7 +156,7 @@ export default function Layout({ children }) {
                   {section.title}
                 </div>
                 {section.links.map((link) => (
-                  <SidebarLink key={link.path + link.label} {...link} />
+                  <SidebarLink key={link.path + link.label} {...link} activeHash={activeHash} />
                 ))}
               </div>
             ))}
@@ -145,7 +174,7 @@ export default function Layout({ children }) {
   )
 }
 
-function SidebarLink({ label, path, method, hash }) {
+function SidebarLink({ label, path, method, hash, activeHash }) {
   const methodColors = {
     GET: 'bg-emerald-500/10 text-emerald-400',
     POST: 'bg-blue-500/10 text-blue-400',
@@ -153,13 +182,18 @@ function SidebarLink({ label, path, method, hash }) {
     DELETE: 'bg-red-500/10 text-red-400',
   }
 
-  // Hash links scroll to section, no active highlight
+  // Hash links scroll to section, highlight based on scroll position
   if (hash) {
+    const isActive = activeHash === hash
     return (
       <a
         href={hash}
-        className="flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 border-transparent transition-colors no-underline"
-        style={{ color: 'var(--c-text2)' }}
+        className={`flex items-center gap-2 px-4 py-1.5 text-[13px] border-l-2 transition-colors no-underline ${
+          isActive
+            ? 'border-blue-500 text-blue-400 bg-blue-500/5'
+            : 'border-transparent'
+        }`}
+        style={isActive ? {} : { color: 'var(--c-text2)' }}
       >
         {label}
       </a>

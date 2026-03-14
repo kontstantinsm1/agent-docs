@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Introduction from './pages/Introduction'
 import QuickStart from './pages/QuickStart'
+import { Agents, Telephony, Webhooks, Providers } from './pages/Concepts'
 import ApiReference, {
   CallCreate, CallGet, CallList, CallTranscript, CallHangup,
   AgentCreate, AgentList, AgentGet, AgentUpdate, AgentDelete, AgentSchema,
@@ -20,10 +21,10 @@ export default function App() {
           {/* Docs */}
           <Route path="/docs" element={<Introduction />} />
           <Route path="/docs/quickstart" element={<QuickStart />} />
-          <Route path="/docs/agents" element={<Introduction />} />
-          <Route path="/docs/telephony" element={<Introduction />} />
-          <Route path="/docs/webhooks" element={<Introduction />} />
-          <Route path="/docs/providers" element={<Introduction />} />
+          <Route path="/docs/agents" element={<Agents />} />
+          <Route path="/docs/telephony" element={<Telephony />} />
+          <Route path="/docs/webhooks" element={<Webhooks />} />
+          <Route path="/docs/providers" element={<Providers />} />
 
           {/* API Reference */}
           <Route path="/api" element={<ApiReference />} />
