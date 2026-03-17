@@ -2,12 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Introduction from './pages/Introduction'
 import QuickStart from './pages/QuickStart'
-import { Agents, Telephony, Webhooks, Providers } from './pages/Concepts'
+import { Agents, Telephony, Webhooks, Providers, OperatorTransfer } from './pages/Concepts'
 import Errors from './pages/Errors'
 import ClientSdk from './pages/ClientSdk'
 import ApiReference, {
   CallCreate, CallGet, CallList, CallTranscript, CallResult, CallHangup,
   AgentCreate, AgentList, AgentGet, AgentUpdate, AgentDelete, AgentSchema,
+  OperatorNotify, OperatorJoin, OperatorPending,
   TelephonyNumbers, TelephonyProviders,
   WebhookCreate, WebhookList, WebhookDelete, WebhookEvents,
 } from './pages/ApiReference'
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/docs/agents" element={<Agents />} />
           <Route path="/docs/telephony" element={<Telephony />} />
           <Route path="/docs/webhooks" element={<Webhooks />} />
+          <Route path="/docs/operator" element={<OperatorTransfer />} />
           <Route path="/docs/providers" element={<Providers />} />
           <Route path="/docs/errors" element={<Errors />} />
 
@@ -46,6 +48,9 @@ export default function App() {
           <Route path="/api/agents/update" element={<AgentUpdate />} />
           <Route path="/api/agents/delete" element={<AgentDelete />} />
           <Route path="/api/agents/schema" element={<AgentSchema />} />
+          <Route path="/api/operator/notify" element={<OperatorNotify />} />
+          <Route path="/api/operator/join" element={<OperatorJoin />} />
+          <Route path="/api/operator/pending" element={<OperatorPending />} />
           <Route path="/api/telephony/numbers" element={<TelephonyNumbers />} />
           <Route path="/api/telephony/providers" element={<TelephonyProviders />} />
           <Route path="/api/webhooks/create" element={<WebhookCreate />} />

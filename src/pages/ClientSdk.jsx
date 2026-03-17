@@ -145,6 +145,60 @@ console.log(transcript.transcript);`}</CodeBlock>
       <MethodBlock name="agent.webhooks.list()" desc="List registered webhooks." returns="Promise<{ webhooks: Webhook[] }>" />
       <MethodBlock name="agent.webhooks.delete(webhookId)" desc="Delete a webhook." params={[{ name: 'webhookId', type: 'string', required: true, desc: 'Webhook ID' }]} returns='Promise<{ status }>' />
 
+      {/* Operator */}
+      <h2 id="operator" className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Operator</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        Handle operator transfers — list pending transfers and connect operators to active calls.
+      </p>
+
+      <MethodBlock
+        name="agent.operator.listPending()"
+        desc="List all pending transfers waiting for an operator."
+        returns="Promise<{ transfers: TransferRequest[] }>"
+      />
+      <MethodBlock
+        name="agent.operator.join(transferId)"
+        desc="Accept a transfer and get LiveKit credentials to join the room as operator."
+        params={[{ name: 'transferId', type: 'string', required: true, desc: 'Transfer ID from webhook or listPending()' }]}
+        returns="Promise<OperatorJoinResponse>"
+      />
+
+      <CodeBlock title="Complete operator transfer example">{`// 1. Register webhook for transfer events
+await agent.webhooks.create({
+  url: "https://your-app.com/api/webhooks",
+  events: ["operator.transfer_requested"],
+});
+
+// 2. Handle incoming transfer webhook
+export async function POST(req: Request) {
+  const data = await agent.verifyWebhookAsync(
+    await req.text(),
+    req.headers.get("x-webhook-signature") || ""
+  );
+
+  if (data.event === "operator.transfer_requested") {
+    const { transfer_id, caller_phone, transcript_summary } = data;
+    // Your logic: push notification, CRM popup, queue, etc.
+    await notifyAvailableOperator(transfer_id, caller_phone);
+  }
+
+  return Response.json({ ok: true });
+}
+
+// 3. When operator is ready, join the room
+const result = await agent.operator.join("abc12345");
+// result.livekitUrl  — WebSocket URL for LiveKit
+// result.token       — JWT token (valid 30 min)
+// result.roomName    — room to join
+// result.operatorIdentity — "operator-abc12345"
+// result.callerPhone, result.transcriptSummary — context
+
+// 4. Connect to LiveKit room (using livekit-client SDK)
+import { Room } from "livekit-client";
+const room = new Room();
+await room.connect(result.livekitUrl, result.token);
+// Operator is now talking to the caller. Bot auto-disconnects.`}</CodeBlock>
+
       {/* Webhook verification */}
       <h2 id="webhook-verification" className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Webhook Verification</h2>
       <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
@@ -299,6 +353,8 @@ try {
   CreateWebhookParams,
   WebhookPayload,
   WebhookEvent,
+  TransferRequest,
+  OperatorJoinResponse,
 } from "@agent-core/sdk";`}</CodeBlock>
 
       <h3 className="text-base font-semibold mt-5 mb-2">Call</h3>
@@ -333,7 +389,8 @@ interface AgentConfig {
 
       <h3 className="text-base font-semibold mt-5 mb-2">WebhookPayload</h3>
       <CodeBlock>{`interface WebhookPayload {
-  event: "call.queued" | "call.started" | "call.completed" | "call.failed";
+  event: "call.queued" | "call.started" | "call.completed" | "call.failed"
+       | "operator.transfer_requested" | "operator.transfer_accepted";
   call_id: string;
   status: string;
   phone: string;
@@ -344,6 +401,30 @@ interface AgentConfig {
   functions_called?: string[];
   transcript?: TranscriptEntry[];
   fields?: Record<string, string>;
+}`}</CodeBlock>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">TransferRequest</h3>
+      <CodeBlock>{`interface TransferRequest {
+  transferId: string;
+  roomName: string;
+  callerPhone: string;
+  agentName: string;
+  transferTo: string;
+  transcriptSummary: string;
+  livekitUrl: string;
+  joinUrl: string;
+  createdAt: number;
+  status: "pending" | "accepted";
+}`}</CodeBlock>
+
+      <h3 className="text-base font-semibold mt-5 mb-2">OperatorJoinResponse</h3>
+      <CodeBlock>{`interface OperatorJoinResponse {
+  livekitUrl: string;
+  token: string;
+  roomName: string;
+  operatorIdentity: string;
+  callerPhone: string;
+  transcriptSummary: string;
 }`}</CodeBlock>
 
       {/* Call Log */}

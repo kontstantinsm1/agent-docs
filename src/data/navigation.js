@@ -20,6 +20,7 @@ export const sidebars = {
         { label: 'Agents', path: '/docs/agents' },
         { label: 'Calls & Telephony', path: '/docs/telephony' },
         { label: 'Webhooks', path: '/docs/webhooks' },
+        { label: 'Operator Transfer', path: '/docs/operator' },
         { label: 'Voice Providers', path: '/docs/providers' },
         { label: 'Errors', path: '/docs/errors' },
       ],
@@ -62,6 +63,14 @@ export const sidebars = {
       ],
     },
     {
+      title: 'Operator',
+      links: [
+        { label: 'Notify Transfer', path: '/api/operator/notify', method: 'POST' },
+        { label: 'Join Transfer', path: '/api/operator/join', method: 'POST' },
+        { label: 'List Pending', path: '/api/operator/pending', method: 'GET' },
+      ],
+    },
+    {
       title: 'Webhooks',
       links: [
         { label: 'Create Webhook', path: '/api/webhooks/create', method: 'POST' },
@@ -88,6 +97,7 @@ export const sidebars = {
         { label: 'Agents', path: '/sdk', hash: '#agents' },
         { label: 'Numbers', path: '/sdk', hash: '#numbers' },
         { label: 'Webhooks', path: '/sdk', hash: '#webhooks' },
+        { label: 'Operator', path: '/sdk', hash: '#operator' },
       ],
     },
     {

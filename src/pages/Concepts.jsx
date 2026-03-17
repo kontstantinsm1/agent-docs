@@ -162,6 +162,8 @@ export function Webhooks() {
         <li><code className="text-xs px-1.5 py-0.5 rounded text-blue-400" style={{ background: 'var(--c-code-bg)' }}>call.started</code> — Call has connected, agent is speaking</li>
         <li><code className="text-xs px-1.5 py-0.5 rounded text-emerald-400" style={{ background: 'var(--c-code-bg)' }}>call.completed</code> — Call finished successfully</li>
         <li><code className="text-xs px-1.5 py-0.5 rounded text-red-400" style={{ background: 'var(--c-code-bg)' }}>call.failed</code> — Call failed with an error</li>
+        <li><code className="text-xs px-1.5 py-0.5 rounded text-amber-400" style={{ background: 'var(--c-code-bg)' }}>operator.transfer_requested</code> — Bot triggered a transfer to operator (<a href="/docs/operator" className="text-blue-400 hover:underline">learn more</a>)</li>
+        <li><code className="text-xs px-1.5 py-0.5 rounded text-amber-400" style={{ background: 'var(--c-code-bg)' }}>operator.transfer_accepted</code> — Operator accepted and joined the call</li>
       </ul>
 
       <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Payload Format</h2>
@@ -209,7 +211,7 @@ export function Webhooks() {
         <li><strong style={{ color: 'var(--c-text)' }}>Global</strong> — Register a webhook via the <a href="/api/webhooks/create" className="text-blue-400 hover:underline">Webhooks API</a></li>
       </ul>
 
-      <PageNav prev={{ label: 'Calls & Telephony', path: '/docs/telephony' }} next={{ label: 'Voice Providers', path: '/docs/providers' }} />
+      <PageNav prev={{ label: 'Calls & Telephony', path: '/docs/telephony' }} next={{ label: 'Operator Transfer', path: '/docs/operator' }} />
     </>
   )
 }
@@ -256,7 +258,145 @@ export function Providers() {
   }
 }`}</CodeBlock>
 
-      <PageNav prev={{ label: 'Webhooks', path: '/docs/webhooks' }} next={{ label: 'Errors', path: '/docs/errors' }} />
+      <PageNav prev={{ label: 'Operator Transfer', path: '/docs/operator' }} next={{ label: 'Errors', path: '/docs/errors' }} />
+    </>
+  )
+}
+
+export function OperatorTransfer() {
+  return (
+    <>
+      <h1 className="text-3xl font-bold tracking-tight mb-2">Operator Transfer</h1>
+      <p className="text-base mb-8" style={{ color: 'var(--c-text2)' }}>
+        Transfer active calls from the AI agent to a human operator. Supports both phone transfer (SIP REFER) and web transfer (LiveKit room join).
+      </p>
+
+      <h2 className="text-xl font-semibold mb-3">How It Works</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        When a conversation flow reaches a <strong style={{ color: 'var(--c-text)' }}>Transfer node</strong>, the bot hands off the call to a human operator. There are two transfer modes:
+      </p>
+
+      <ul className="text-sm space-y-3 mb-6" style={{ color: 'var(--c-text2)' }}>
+        <li>
+          <strong style={{ color: 'var(--c-text)' }}>Phone Transfer (SIP REFER)</strong> — The caller is transferred to another phone number via SIP. The bot disconnects immediately after initiating the transfer.
+        </li>
+        <li>
+          <strong style={{ color: 'var(--c-text)' }}>Web Transfer (LiveKit)</strong> — A webhook is fired to your system. Your operator joins the LiveKit room via browser/app. The bot detects the operator and disconnects, leaving caller and operator in the room.
+        </li>
+      </ul>
+
+      <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Web Transfer Flow</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        The web transfer flow uses webhooks and the Operator API to connect a human operator:
+      </p>
+
+      <div className="space-y-3 mb-6">
+        {[
+          { step: '1', label: 'Bot reaches transfer node', desc: 'The AI agent speaks the transfer message and waits for TTS to finish.' },
+          { step: '2', label: 'Webhook fired', desc: 'Server sends operator.transfer_requested webhook with transfer_id, room info, and transcript summary.' },
+          { step: '3', label: 'Your system notifies operator', desc: 'You handle routing — push notification, CRM popup, queue system, etc.' },
+          { step: '4', label: 'Operator joins', desc: 'Call POST /api/v1/operator/join/{transfer_id} to get a LiveKit token. Connect to the room using LiveKit SDK.' },
+          { step: '5', label: 'Bot disconnects', desc: 'Bot detects the operator participant and leaves. Caller and operator are now connected.' },
+        ].map(({ step, label, desc }) => (
+          <div key={step} className="flex gap-3 items-start">
+            <div className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)', color: 'var(--c-text)' }}>{step}</div>
+            <div>
+              <div className="text-sm font-medium" style={{ color: 'var(--c-text)' }}>{label}</div>
+              <div className="text-xs mt-0.5" style={{ color: 'var(--c-text2)' }}>{desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Webhook Payload</h2>
+      <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+        When a web transfer is triggered, the <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>operator.transfer_requested</code> webhook is sent to all registered webhook URLs:
+      </p>
+
+      <CodeBlock title="operator.transfer_requested">{`{
+  "event": "operator.transfer_requested",
+  "transfer_id": "abc12345",
+  "room_name": "call_550e8400",
+  "caller_phone": "+380501234567",
+  "agent_name": "Sales Assistant",
+  "transfer_to": "support-team",
+  "transcript_summary": "user: I want to talk to a real person | assistant: Connecting you now...",
+  "livekit_url": "wss://livekit.your-server.com",
+  "join_url": "https://your-server:8008/api/v1/operator/join/abc12345"
+}`}</CodeBlock>
+
+      <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Operator Join Response</h2>
+      <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+        When the operator calls <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>POST /api/v1/operator/join/{'{transfer_id}'}</code>, they receive LiveKit credentials:
+      </p>
+
+      <CodeBlock title="Join response">{`{
+  "livekit_url": "wss://livekit.your-server.com",
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "room_name": "call_550e8400",
+  "operator_identity": "operator-abc12345",
+  "caller_phone": "+380501234567",
+  "transcript_summary": "user: I want to talk to a real person..."
+}`}</CodeBlock>
+
+      <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>Flow Editor Configuration</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--c-text2)' }}>
+        Transfer nodes are configured visually in the Flow Editor. Each transfer node has:
+      </p>
+      <ul className="text-sm space-y-2 mb-6" style={{ color: 'var(--c-text2)' }}>
+        <li><strong style={{ color: 'var(--c-text)' }}>Transfer Type</strong> — <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>phone</code> (SIP REFER) or <code className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--c-code-bg)' }}>web</code> (LiveKit room join)</li>
+        <li><strong style={{ color: 'var(--c-text)' }}>Destination</strong> — Phone number (E.164) for phone transfers, or operator group ID for web transfers</li>
+        <li><strong style={{ color: 'var(--c-text)' }}>Task Message</strong> — What the bot says before transferring (e.g. "Connecting you to an operator...")</li>
+        <li><strong style={{ color: 'var(--c-text)' }}>Play Dialtone</strong> — Whether to play a dialtone during phone transfer</li>
+      </ul>
+
+      <CodeBlock title="Transfer node in flow JSON">{`{
+  "transfer_to_operator": {
+    "task_messages": [
+      { "role": "system", "content": "Tell the customer you are connecting them to an operator." }
+    ],
+    "post_actions": [
+      {
+        "type": "transfer",
+        "transfer_type": "web",
+        "transfer_to": "support-team",
+        "play_dialtone": true
+      }
+    ]
+  }
+}`}</CodeBlock>
+
+      <h2 className="text-xl font-semibold mb-3 mt-8 pt-8" style={{ borderTop: '1px solid var(--c-border)' }}>SDK Usage</h2>
+      <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+        Use the SDK to handle transfer webhooks and connect operators:
+      </p>
+
+      <CodeBlock title="Handle transfer webhook">{`// 1. Register webhook for transfer events
+await agent.webhooks.create({
+  url: "https://your-app.com/api/webhooks",
+  events: ["operator.transfer_requested"],
+});
+
+// 2. In your webhook handler:
+export async function POST(req: Request) {
+  const data = await agent.verifyWebhookAsync(
+    await req.text(),
+    req.headers.get("x-webhook-signature") || ""
+  );
+
+  if (data.event === "operator.transfer_requested") {
+    // Notify your operator (push notification, CRM, queue, etc.)
+    await notifyOperator(data.transfer_id, data.caller_phone);
+  }
+
+  return Response.json({ ok: true });
+}
+
+// 3. When operator is ready:
+const result = await agent.operator.join("abc12345");
+// Connect to LiveKit room with result.livekitUrl + result.token`}</CodeBlock>
+
+      <PageNav prev={{ label: 'Webhooks', path: '/docs/webhooks' }} next={{ label: 'Voice Providers', path: '/docs/providers' }} />
     </>
   )
 }

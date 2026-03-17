@@ -251,7 +251,7 @@ export function AgentSchema() {
     <>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Agent Schema</h1>
       <Endpoint method="GET" path="/api/v1/agents/schema" description="Get the JSON Schema for agent configuration. Useful for dynamic form generation." />
-      <PageNav prev={{ label: 'Delete Agent', path: '/api/agents/delete' }} next={{ label: 'List Numbers', path: '/api/telephony/numbers' }} />
+      <PageNav prev={{ label: 'Delete Agent', path: '/api/agents/delete' }} next={{ label: 'Notify Transfer', path: '/api/operator/notify' }} />
     </>
   )
 }
@@ -273,7 +273,7 @@ export function TelephonyNumbers() {
   ]
 }`}</CodeBlock>
       </Endpoint>
-      <PageNav prev={{ label: 'Agent Schema', path: '/api/agents/schema' }} next={{ label: 'List Providers', path: '/api/telephony/providers' }} />
+      <PageNav prev={{ label: 'List Pending', path: '/api/operator/pending' }} next={{ label: 'List Providers', path: '/api/telephony/providers' }} />
     </>
   )
 }
@@ -289,6 +289,89 @@ export function TelephonyProviders() {
 }
 
 /* ============================
+   OPERATOR
+   ============================ */
+
+export function OperatorNotify() {
+  return (
+    <>
+      <h1 className="text-3xl font-bold tracking-tight mb-2">Notify Transfer</h1>
+      <Endpoint method="POST" path="/api/v1/operator/notify" description="Called internally by the bot when a web transfer is triggered. Stores the transfer and fires the operator.transfer_requested webhook.">
+        <ParamTable params={[
+          { name: 'room_name', type: 'string', required: true, description: 'LiveKit room name where the call is active' },
+          { name: 'caller_phone', type: 'string', description: 'Phone number of the caller' },
+          { name: 'agent_name', type: 'string', description: 'Name of the AI agent' },
+          { name: 'transfer_to', type: 'string', description: 'Operator group/queue ID' },
+          { name: 'transcript_summary', type: 'string', description: 'Recent conversation summary' },
+        ]} />
+        <ResponseLabel />
+        <CodeBlock>{`{
+  "transfer_id": "abc12345"
+}`}</CodeBlock>
+      </Endpoint>
+      <PageNav prev={{ label: 'Agent Schema', path: '/api/agents/schema' }} next={{ label: 'Join Transfer', path: '/api/operator/join' }} />
+    </>
+  )
+}
+
+export function OperatorJoin() {
+  return (
+    <>
+      <h1 className="text-3xl font-bold tracking-tight mb-2">Join Transfer</h1>
+      <Endpoint method="POST" path="/api/v1/operator/join/{transfer_id}" description="Accept a pending transfer. Returns LiveKit credentials for the operator to join the room.">
+        <p className="text-sm mb-3" style={{ color: 'var(--c-text2)' }}>
+          The returned token is valid for 30 minutes. The operator should connect to the LiveKit room using the LiveKit client SDK.
+          Once the bot detects the operator participant (identity starting with "operator"), it will save the transcript and disconnect.
+        </p>
+        <ResponseLabel />
+        <CodeBlock>{`{
+  "livekit_url": "wss://livekit.your-server.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "room_name": "call_550e8400",
+  "operator_identity": "operator-abc12345",
+  "caller_phone": "+380501234567",
+  "transcript_summary": "user: I want to talk to a person | assistant: Connecting you..."
+}`}</CodeBlock>
+      </Endpoint>
+      <p className="text-sm mt-4 mb-2" style={{ color: 'var(--c-text2)' }}>Error responses:</p>
+      <ul className="text-sm space-y-1 mb-4" style={{ color: 'var(--c-text2)' }}>
+        <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-red-400">404</code> — Transfer not found or expired (transfers expire after 10 minutes)</li>
+        <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-red-400">409</code> — Transfer already accepted by another operator</li>
+      </ul>
+      <PageNav prev={{ label: 'Notify Transfer', path: '/api/operator/notify' }} next={{ label: 'List Pending', path: '/api/operator/pending' }} />
+    </>
+  )
+}
+
+export function OperatorPending() {
+  return (
+    <>
+      <h1 className="text-3xl font-bold tracking-tight mb-2">List Pending Transfers</h1>
+      <Endpoint method="GET" path="/api/v1/operator/pending" description="List all pending transfers waiting for an operator. Transfers older than 10 minutes are automatically cleaned up.">
+        <ResponseLabel />
+        <CodeBlock>{`{
+  "transfers": [
+    {
+      "transfer_id": "abc12345",
+      "room_name": "call_550e8400",
+      "caller_phone": "+380501234567",
+      "agent_name": "Sales Assistant",
+      "transfer_to": "support-team",
+      "transcript_summary": "...",
+      "livekit_url": "wss://livekit.your-server.com",
+      "join_url": "https://your-server:8008/api/v1/operator/join/abc12345",
+      "created_at": 1710672000.0,
+      "status": "pending"
+    }
+  ]
+}`}</CodeBlock>
+      </Endpoint>
+      <PageNav prev={{ label: 'Join Transfer', path: '/api/operator/join' }} next={{ label: 'List Numbers', path: '/api/telephony/numbers' }} />
+    </>
+  )
+}
+
+/* ============================
    WEBHOOKS
    ============================ */
 
@@ -299,7 +382,7 @@ export function WebhookCreate() {
       <Endpoint method="POST" path="/api/v1/webhooks" description="Register a webhook URL to receive events.">
         <ParamTable params={[
           { name: 'url', type: 'string', required: true, description: 'HTTPS URL to receive POST events' },
-          { name: 'events', type: 'string[]', description: 'Filter events (default: all). Options: call.queued, call.started, call.completed, call.failed' },
+          { name: 'events', type: 'string[]', description: 'Filter events (default: all). Options: call.queued, call.started, call.completed, call.failed, operator.transfer_requested, operator.transfer_accepted' },
         ]} />
       </Endpoint>
       <PageNav prev={{ label: 'List Providers', path: '/api/telephony/providers' }} next={{ label: 'List Webhooks', path: '/api/webhooks/list' }} />
@@ -347,6 +430,8 @@ export function WebhookEvents() {
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-purple-400">call.step</code> — flow function completed, partial data collected (requires <code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded">step_save: true</code>)</li>
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-emerald-400">call.completed</code> — call finished successfully</li>
         <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-red-400">call.failed</code> — call failed with error</li>
+        <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-amber-400">operator.transfer_requested</code> — bot triggered a transfer to operator</li>
+        <li><code className="text-xs bg-zinc-800 px-1.5 py-0.5 rounded text-amber-400">operator.transfer_accepted</code> — operator accepted and joined the call</li>
       </ul>
 
       <h3 className="text-base font-semibold mt-6 mb-3">call.step Payload</h3>
